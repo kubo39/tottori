@@ -31,7 +31,7 @@ void activate()
   errnoEnforce(prctl(PR_SET_DUMPABLE, 0, 0, 0, 0) == 0);
 
   // Enter a new session group.
-  setsid();
+  errnoEnforce(setsid() != -1);
 
   // Clear out the process environment.
   assert(clearenv() == 0);
