@@ -19,12 +19,14 @@ Profile profile()
 
 void main(string[] args)
 {
-  if (args.canFind("child")) {
+  if (args.canFind("child")) {  // child.
     auto sandbox = new ChildSandbox(profile());
     sandbox.activate();
     "Not printed!".writeln;
   }
-  auto sandbox = new Sandbox(profile());
-  auto pid = sandbox.run(args ~ "child");
-  exit(wait(pid));
+  else {  // parent.
+    auto sandbox = new Sandbox(profile());
+    auto pid = sandbox.run(args ~ "child");
+    exit(wait(pid));
+  }
 }
