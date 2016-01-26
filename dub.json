@@ -1,0 +1,7 @@
+{
+    "name": "sandbox",
+    "authors": ["kubo39"],
+    "targetName": "sandbox",
+    "targetType": "staticLibrary",
+    "targetPath": "build",
+}
