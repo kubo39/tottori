@@ -8,6 +8,8 @@ import std.conv : to;
 import core.sys.posix.fcntl : O_RDONLY, O_NONBLOCK;
 import core.sys.posix.sys.socket : AF_UNIX, AF_INET, AF_INET6;
 
+import std.exception : errnoEnforce;
+
 import sandbox.profile;
 
 
@@ -375,17 +377,16 @@ class Filter
 
   /// Activates this filter, applying all of its restrictions forevermore. This can only be done
   /// once
-  auto activate()
+  void activate()
   {
     auto result = prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0);
     assert(result == 0);
 
     const fprog = sock_fprog(program.length.to!short, program.ptr);
-    result = prctl(PR_SET_SECCOMP,
-                   SECCOMP_MODE_FILTER,
-                   cast(ulong)&fprog,
-                   -1,
-                   0);
-    assert(result == 0);
+    errnoEnforce(prctl(PR_SET_SECCOMP,
+                       SECCOMP_MODE_FILTER,
+                       cast(ulong)&fprog,
+                       -1,
+                       0) == 0);
   }
 }
