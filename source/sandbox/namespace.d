@@ -13,6 +13,7 @@ import std.string;
 import std.conv : to;
 import std.range : repeat;
 import std.array : array;
+import std.exception : errnoEnforce;
 
 import std.stdio;
 
@@ -82,29 +83,21 @@ class ChrootJail
     string tmpDirname = "/tmp/sandbox.XXXXXX";
     dirname = cast(const) mkdtemp(cast(char*)tmpDirname.toStringz);
     if (dirname is null) {
-      throw new Exception("failed - mkdtemp(2)");
+      errnoEnforce(false, "Cound not create temporary directory.");
     }
 
-    int ret = mount("tempfs".toStringz,
-                    dirname,
-                    "tempfs".toStringz,
-                    MS_NOATIME | MS_NODEV | MS_NOEXEC | MS_NOSUID,
-                    null);
-    if (ret == -1) {
-      throw new Exception("failed - mount(2)");
-    }
+    errnoEnforce(mount("tempfs".toStringz,
+                       dirname,
+                       "tempfs".toStringz,
+                       MS_NOATIME | MS_NODEV | MS_NOEXEC | MS_NOSUID,
+                       null) == 0);
   }
 
   // Enter the `chroot` jail.
   void enter()
   {
-    if (chroot(dirname) == -1) {
-      throw new Exception("failed - chroot(2)");
-    }
-
-    if (chdir(".") == -1) {
-      throw new Exception("failed - chdir(2)");
-    }
+    errnoEnforce(chroot(dirname) == 0);
+    errnoEnforce(chdir(".") == 0);
   }
 }
 
@@ -158,10 +151,10 @@ pid_t spawnJail(
 
   int[2] fds;
   // Create a pipe so we can communicate the PID of our grandchild back.
-  assert(pipe(fds) == 0, "failed - pipe(2)");
+  errnoEnforce(pipe(fds) == 0);
 
   // Set this `prctl` flag so that we can wait on our grandchild.
-  assert(prctl(PR_SET_CHILD_SUBREAPER, 1, 0, 0, 0) == 0, "failed - prctl(2)");
+  errnoEnforce(prctl(PR_SET_CHILD_SUBREAPER, 1, 0, 0, 0) == 0);
 
   if (fork() == 0) {
     pid_t pid;
@@ -172,7 +165,7 @@ pid_t spawnJail(
 
     if ((pid = fork()) == 0) {
       // Enter the auxiliary namespaces.
-      assert(unshare(flags) == 0);
+      errnoEnforce(unshare(flags) == 0);
 
       // run command.
       sandbox.process.exec(args);
