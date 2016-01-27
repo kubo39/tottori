@@ -8,7 +8,6 @@ import std.conv : to;
 import core.sys.posix.unistd;
 import core.sys.posix.sys.wait;
 
-
 class ProcessException : Exception
 {
   this(string msg, string file = __FILE__, size_t line = __LINE__)
@@ -18,65 +17,60 @@ class ProcessException : Exception
 
   // Creates a new ProcessException based on errno.
   static ProcessException newFromErrno(string customMsg = null,
-                                       string file = __FILE__,
-                                       size_t line = __LINE__)
+      string file = __FILE__, size_t line = __LINE__)
   {
     import core.stdc.errno;
     import core.stdc.string;
 
     char[1024] buf;
-    auto errnoMsg = to!string(
-      core.stdc.string.strerror_r(errno, buf.ptr, buf.length));
+    auto errnoMsg = to!string(core.stdc.string.strerror_r(errno, buf.ptr, buf.length));
 
-    auto msg = !customMsg.length ? errnoMsg
-      : customMsg ~ " (" ~ errnoMsg ~ ')';
+    auto msg = !customMsg.length ? errnoMsg : customMsg ~ " (" ~ errnoMsg ~ ')';
     return new ProcessException(msg, file, line);
   }
 }
 
-
-version(Linux)
+version (Linux)
 {
   // Made available by the C runtime:
-  extern(C) extern __gshared const char** environ;
+  extern (C) extern __gshared const char** environ;
 
   unittest
   {
-    new Thread({assert(environ !is null);}).start();
+    new Thread({ assert(environ !is null); }).start();
   }
 }
-
 
 void exec(in char[][] args)
 {
   const name = args[0];
 
   // Convert program name and arguments to C-style strings.
-  auto argz = new const(char)*[args.length+1];
+  auto argz = new const(char)*[args.length + 1];
   argz[0] = name.toStringz;
-  foreach (i; 1 .. args.length) {
+  foreach (i; 1 .. args.length)
+  {
     argz[i] = args[i].toStringz;
   }
-  argz[$-1] = null;
+  argz[$ - 1] = null;
 
   execve(argz[0], argz.ptr, null);
   _exit(1);
   assert(false);
 }
 
-
 auto spawn(in char[][] args)
 {
   pid_t pid;
 
   // child
-  if ((pid = fork()) == 0) {
+  if ((pid = fork()) == 0)
+  {
     exec(args);
   }
   // parent
   return pid;
 }
-
 
 // the dirty work for waitpid.
 int wait(pid_t pid)
@@ -85,14 +79,17 @@ int wait(pid_t pid)
 
   int status;
   pid_t check = waitpid(-1, &status, 0);
-  if (check == -1) {
+  if (check == -1)
+  {
     throw new ProcessException("Process does not exist.");
   }
 
-  if (WIFEXITED(status)) {
+  if (WIFEXITED(status))
+  {
     return WEXITSTATUS(status);
   }
-  else {
+  else
+  {
     return -WTERMSIG(status);
   }
 }

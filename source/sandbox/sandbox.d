@@ -7,7 +7,6 @@ import sandbox.misc;
 
 import core.sys.posix.unistd;
 
-
 class Sandbox
 {
   Profile profile;
@@ -22,7 +21,6 @@ class Sandbox
     return spawnJail(profile, args);
   }
 }
-
 
 class ChildSandbox
 {
