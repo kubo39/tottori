@@ -7,20 +7,17 @@ import std.exception : errnoEnforce;
 
 import sandbox.seccomp : prctl;
 
-
-extern(C)
+extern (C)
 {
   int clearenv();
 }
 
-
 const int RLIMIT_FSIZE = 1;
 const int PR_SET_DUMPABLE = 4;
 
-
 void activate()
 {
-  rlimit limit = { 0, 0 };
+  rlimit limit = {0, 0};
   errnoEnforce(setrlimit(RLIMIT_FSIZE, &limit) == 0);
 
   // Set a restrictive `umask` so that even if files happened to get written it'd be hard to do

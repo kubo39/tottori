@@ -12,7 +12,6 @@ import std.exception : errnoEnforce;
 
 import sandbox.profile;
 
-
 extern (C)
 {
   struct sock_filter
@@ -23,7 +22,8 @@ extern (C)
     ubyte jf;
   }
 
-  struct sock_fprog {
+  struct sock_fprog
+  {
     short len;
     const sock_filter* filter;
   }
@@ -86,7 +86,6 @@ immutable
   ulong SECCOMP_MODE_FILTER = 2;
 }
 
-
 // syscall.
 const
 {
@@ -126,141 +125,49 @@ const
   uint NR_getrandom = 318;
 }
 
-
 static ALLW_SYSCALLS = [
-  NR_brk,
-  NR_close,
-  NR_exit,
-  NR_exit_group,
-  NR_futex,
-  NR_getrandom,
-  NR_getuid,
-  NR_mmap,
-  NR_mprotect,
-  NR_munmap,
-  NR_poll,
-  NR_read,
-  NR_recvfrom,
-  NR_recvmsg,
-  NR_rt_sigreturn,
-  NR_sched_getaffinity,
-  NR_sendmmsg,
-  NR_sendto,
-  NR_set_robust_list,
-  NR_sigaltstack,
-  NR_write,
-  ];
+  NR_brk, NR_close, NR_exit, NR_exit_group, NR_futex, NR_getrandom, NR_getuid, NR_mmap, NR_mprotect, NR_munmap,
+  NR_poll, NR_read, NR_recvfrom, NR_recvmsg, NR_rt_sigreturn, NR_sched_getaffinity,
+  NR_sendmmsg, NR_sendto, NR_set_robust_list, NR_sigaltstack, NR_write,
+];
 
-static ALLOWED_SYSCALLS_FOR_FILE_READ = [
-  NR_access,
-  NR_fstat,
-  NR_lseek,
-  NR_readlink,
-  NR_stat,
-  ];
+static ALLOWED_SYSCALLS_FOR_FILE_READ = [NR_access, NR_fstat, NR_lseek, NR_readlink, NR_stat,];
 
-static ALLOWED_SYSCALLS_FOR_NETWORK_OUTBOUND = [
-  NR_bind,
-  NR_connect,
-  NR_getsockname,
-  ];
+static ALLOWED_SYSCALLS_FOR_NETWORK_OUTBOUND = [NR_bind, NR_connect, NR_getsockname,];
 
 const
 {
-  sock_filter ALLOW_SYSCALL = sock_filter(
-  RET + K,
-  SECCOMP_RET_ALLOW,
-  0,
-  0,
-  );
+  sock_filter ALLOW_SYSCALL = sock_filter(RET + K, SECCOMP_RET_ALLOW, 0, 0,);
 
- sock_filter VALIDATE_ARCHITECTURE_0 = sock_filter(
-  LD + W + ABS,
-  ARCH_NR_OFFSET,
-  0,
-  0,
-  );
+  sock_filter VALIDATE_ARCHITECTURE_0 = sock_filter(LD + W + ABS, ARCH_NR_OFFSET, 0, 0,);
 
- sock_filter VALIDATE_ARCHITECTURE_1 = sock_filter(
-  JMP + JEQ + K,
-  AUDIT_ARCH_X86_64,
-  1,
-  0,
-  );
+  sock_filter VALIDATE_ARCHITECTURE_1 = sock_filter(JMP + JEQ + K, AUDIT_ARCH_X86_64, 1, 0,);
 
- sock_filter KILL_PROCESS = sock_filter(
-  RET + K,
-  SECCOMP_RET_KILL,
-  0,
-  0,
-  );
+  sock_filter KILL_PROCESS = sock_filter(RET + K, SECCOMP_RET_KILL, 0, 0,);
 
- sock_filter EXAMINE_SYSCALL = sock_filter(
-   LD + W + ABS,
-   SYSCALL_NR_OFFSET,
-   0,
-   0,
-  );
+  sock_filter EXAMINE_SYSCALL = sock_filter(LD + W + ABS, SYSCALL_NR_OFFSET, 0, 0,);
 
- sock_filter EXAMINE_ARG_0 = sock_filter(
-  LD + W + ABS,
-  ARG_0_OFFSET,
-  0,
-  0,
-  );
+  sock_filter EXAMINE_ARG_0 = sock_filter(LD + W + ABS, ARG_0_OFFSET, 0, 0,);
 
- sock_filter EXAMINE_ARG_1 = sock_filter(
-  LD + W + ABS,
-  ARG_1_OFFSET,
-  0,
-  0,
-  );
+  sock_filter EXAMINE_ARG_1 = sock_filter(LD + W + ABS, ARG_1_OFFSET, 0, 0,);
 
- sock_filter EXAMINE_ARG_2 = sock_filter(
-  LD + W + ABS,
-  ARG_2_OFFSET,
-  0,
-  0,
-  );
+  sock_filter EXAMINE_ARG_2 = sock_filter(LD + W + ABS, ARG_2_OFFSET, 0, 0,);
 }
 
 /// Syscalls that are always allowed.
 static const ALLOWED_SYSCALLS = [
-  NR_brk,
-  NR_close,
-  NR_exit,
-  NR_exit_group,
-  NR_futex,
-  NR_getrandom,
-  NR_getuid,
-  NR_mmap,
-  NR_mprotect,
-  NR_munmap,
-  NR_poll,
-  NR_read,
-  NR_recvfrom,
-  NR_recvmsg,
-  NR_rt_sigreturn,
-  NR_sched_getaffinity,
-  NR_sendmmsg,
-  NR_sendto,
-  NR_set_robust_list,
-  NR_sigaltstack,
-  NR_write,
-  ];
+  NR_brk, NR_close, NR_exit, NR_exit_group, NR_futex, NR_getrandom, NR_getuid, NR_mmap, NR_mprotect, NR_munmap,
+  NR_poll, NR_read, NR_recvfrom, NR_recvmsg, NR_rt_sigreturn, NR_sched_getaffinity,
+  NR_sendmmsg, NR_sendto, NR_set_robust_list, NR_sigaltstack, NR_write,
+];
 
 alias VALIDATE_ARCHITECTURE_2 = KILL_PROCESS;
 
 static sock_filter[] FILTER_PROLOGUE = [
-  VALIDATE_ARCHITECTURE_0,
-  VALIDATE_ARCHITECTURE_1,
-  VALIDATE_ARCHITECTURE_2,
-  ];
+  VALIDATE_ARCHITECTURE_0, VALIDATE_ARCHITECTURE_1, VALIDATE_ARCHITECTURE_2,
+];
 
-static sock_filter[] FILTER_EPILOGUE = [
-  KILL_PROCESS,
-  ];
-
+static sock_filter[] FILTER_EPILOGUE = [KILL_PROCESS,];
 
 // seccomp-bpf filter.
 class Filter
@@ -274,35 +181,36 @@ class Filter
     // allow syscall in default.
     allowSyscalls(ALLOWED_SYSCALLS);
 
-    if (profile.allowedOperation.canFind(Operation.FileReadAll) ||
-        profile.allowedOperation.canFind(Operation.FileReadMetadata)) {
+    if (profile.allowedOperation.canFind(Operation.FileReadAll)
+        || profile.allowedOperation.canFind(Operation.FileReadMetadata))
+    {
       allowSyscalls(ALLOWED_SYSCALLS_FOR_FILE_READ);
 
       // only allow file reading.
       ifSyscallIs(NR_open, {
-          ifArg1HasntSet(~(O_RDONLY |  O_CLOEXEC | O_NOCTTY | O_NONBLOCK),
-                         { allowThisSyscall(); });
+        ifArg1HasntSet(~(O_RDONLY | O_CLOEXEC | O_NOCTTY | O_NONBLOCK), {
+          allowThisSyscall();
         });
+      });
 
       // Only allow the `FIONREAD` or `FIOCLEX` `ioctl`s to be performed.
       ifSyscallIs(NR_ioctl, {
-          ifArg1Is(FIONREAD, { allowThisSyscall(); });
-          ifArg1Is(FIOCLEX, { allowThisSyscall(); });
-        });
+        ifArg1Is(FIONREAD, { allowThisSyscall(); });
+        ifArg1Is(FIOCLEX, { allowThisSyscall(); });
+      });
     }
 
-    if (profile.allowedOperation.canFind(Operation.NetworkOutbound)) {
+    if (profile.allowedOperation.canFind(Operation.NetworkOutbound))
+    {
       allowSyscalls(ALLOWED_SYSCALLS_FOR_NETWORK_OUTBOUND);
 
       // Only allow Unix, IPv4, IPv6, and netlink route sockets to be created.
       ifSyscallIs(NR_socket, {
-          ifArg0Is(AF_UNIX, { allowThisSyscall(); });
-          ifArg0Is(AF_INET, { allowThisSyscall(); });
-          ifArg0Is(AF_INET6, { allowThisSyscall(); });
-          ifArg0Is(AF_NETLINK, {
-              ifArg2Is(NETLINK_ROUTE, { allowThisSyscall(); });
-            });
-        });
+        ifArg0Is(AF_UNIX, { allowThisSyscall(); });
+        ifArg0Is(AF_INET, { allowThisSyscall(); });
+        ifArg0Is(AF_INET6, { allowThisSyscall(); });
+        ifArg0Is(AF_NETLINK, { ifArg2Is(NETLINK_ROUTE, { allowThisSyscall(); }); });
+      });
     }
 
     program ~= FILTER_EPILOGUE;
@@ -315,8 +223,9 @@ class Filter
 
   void allowSyscalls(const uint[] syscalls)
   {
-    foreach (number; syscalls) {
-      ifSyscallIs(number, () { allowThisSyscall();});
+    foreach (number; syscalls)
+    {
+      ifSyscallIs(number, () { allowThisSyscall(); });
     }
   }
 
@@ -353,11 +262,7 @@ class Filter
   void ifKIs(const uint value, void delegate() then)
   {
     auto index = program.length;
-    program ~= sock_filter(
-      JMP + JEQ + K,
-      value,
-      0,
-      0);
+    program ~= sock_filter(JMP + JEQ + K, value, 0, 0);
     then();
     program[index].jf = (program.length - index - 1).to!ubyte;
   }
@@ -365,12 +270,7 @@ class Filter
   void ifKHasntSet(const uint value, void delegate() then)
   {
     auto index = program.length;
-    program ~= sock_filter(
-      JMP + JSET + K,
-      value,
-      0,
-      0,
-      );
+    program ~= sock_filter(JMP + JSET + K, value, 0, 0,);
     then();
     program[index].jt = (program.length - index - 1).to!ubyte;
   }
@@ -383,10 +283,6 @@ class Filter
     assert(result == 0);
 
     const fprog = sock_fprog(program.length.to!short, program.ptr);
-    errnoEnforce(prctl(PR_SET_SECCOMP,
-                       SECCOMP_MODE_FILTER,
-                       cast(ulong)&fprog,
-                       -1,
-                       0) == 0);
+    errnoEnforce(prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, cast(ulong)&fprog, -1, 0) == 0);
   }
 }
