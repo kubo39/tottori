@@ -8,41 +8,16 @@ import sandbox.misc;
 import core.sys.posix.unistd;
 
 
-class Sandbox
+pid_t runSandbox(in char[][] args, const Profile profile)
 {
-  Profile profile;
-
-  this(Profile _profile)
-  {
-    profile = _profile;
-  }
-
-  pid_t run(in char[][] args)
-  {
-    return spawnJail(profile, args);
-  }
+  return spawnChildInNewNamespace(args, profile);
 }
 
 
-class ChildSandbox
+auto activateNamespaceAndMisc(Profile profile)
 {
-  Profile profile;
-
-  this(Profile _profile)
-  {
-    profile = _profile;
-  }
-
-  auto activate()
-  {
-    sandbox.namespace.activate();
-    sandbox.misc.activate();
-    auto filter = new Filter(profile);
-    filter.activate();
-  }
-
-  auto run(in char[][] args)
-  {
-    spawnJail(profile, args);
-  }
+  sandbox.namespace.activate();
+  sandbox.misc.activate();
+  auto filter = new Filter(profile);
+  filter.activate();
 }

@@ -51,12 +51,14 @@ extern (C)
   int unshare(int);
   int capset(cap_user_header_t, const_cap_user_data_t);
 
-  struct __user_cap_header_struct {
+  struct __user_cap_header_struct
+  {
     uint ver;
     int pid;
   };
 
-  struct __user_cap_data_struct {
+  struct __user_cap_data_struct
+  {
     uint effective;
     uint permitted;
     uint inheritable;
@@ -130,10 +132,7 @@ body {
 
 
 // spawn a child process in a new namespace.
-pid_t spawnJail(
-  Profile profile,
-  in char[][] args,
-  in string[string] env = null)
+pid_t spawnChildInNewNamespace(in char[][] args,  const Profile profile)
 {
   // Store our root namespace UID and GID because they're going to change once we enter a user
   // namespace.
@@ -190,7 +189,7 @@ pid_t spawnJail(
 
 
 // ditto.
-pid_t spawnJail(Profile profile, in string[] args)
+pid_t spawnChildInNewNamespace(in string[] args, const Profile profile)
 {
-  return spawnJail(profile, cast(const char[][])args);
+  return spawnChildInNewNamespace(cast(const char[][])args, profile);
 }
