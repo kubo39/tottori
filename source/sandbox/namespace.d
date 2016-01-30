@@ -155,14 +155,28 @@ pid_t spawnChildInNewNamespace(in char[][] args,  const Profile profile)
   // Set this `prctl` flag so that we can wait on our grandchild.
   errnoEnforce(prctl(PR_SET_CHILD_SUBREAPER, 1, 0, 0, 0) == 0);
 
-  if (fork() == 0) {
-    pid_t pid;
+  pid_t pid = fork();
 
+  if (pid == -1) {
+    foreach (fd; fds) {
+      close(fd);
+    }
+    errnoEnforce(false, "fork(2) failed.");
+  }
+
+  if (pid == 0) {
     close(fds[0]);
 
     prepareNamespace(uid, gid);
 
-    if ((pid = fork()) == 0) {
+    pid = fork();
+
+    if (pid == -1) {
+      close(fds[1]);
+      errnoEnforce(false, "fork(2) failed.");
+    }
+
+    if (pid == 0) {
       // Enter the auxiliary namespaces.
       errnoEnforce(unshare(flags) == 0);
 
