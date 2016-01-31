@@ -118,7 +118,7 @@ auto dropCapabilities()
 // Sets up the user and PID namespaces.
 void prepareNamespace(in pid_t uid, in pid_t gid)
 {
-  errnoEnforce(unshare(CLONE_NEWUSER | CLONE_NEWPID), "Could not create new user and PID namespaces.");
+  errnoEnforce(unshare(CLONE_NEWUSER | CLONE_NEWPID) == 0, "Could not create new user and PID namespaces.");
 
   import std.stdio : File;
 
