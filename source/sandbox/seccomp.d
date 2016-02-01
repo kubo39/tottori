@@ -102,6 +102,7 @@ const
   uint NR_mprotect = 10;
   uint NR_munmap = 11;
   uint NR_brk = 12;
+  uint NR_rt_sigprocmask = 14;
   uint NR_rt_sigreturn = 15;
   uint NR_ioctl = 16;
   uint NR_access = 21;
