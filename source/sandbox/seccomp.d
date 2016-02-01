@@ -127,8 +127,8 @@ const
   uint NR_getrandom = 318;
 }
 
-
-static ALLW_SYSCALLS = [
+/// Syscalls that are always allowed.
+static const ALLOWED_SYSCALLS = [
   NR_brk,
   NR_close,
   NR_exit,
@@ -143,6 +143,7 @@ static ALLW_SYSCALLS = [
   NR_read,
   NR_recvfrom,
   NR_recvmsg,
+  NR_rt_sigprocmask,
   NR_rt_sigreturn,
   NR_sched_getaffinity,
   NR_sendmmsg,
@@ -224,31 +225,6 @@ const
   0,
   );
 }
-
-/// Syscalls that are always allowed.
-static const ALLOWED_SYSCALLS = [
-  NR_brk,
-  NR_close,
-  NR_exit,
-  NR_exit_group,
-  NR_futex,
-  NR_getrandom,
-  NR_getuid,
-  NR_mmap,
-  NR_mprotect,
-  NR_munmap,
-  NR_poll,
-  NR_read,
-  NR_recvfrom,
-  NR_recvmsg,
-  NR_rt_sigreturn,
-  NR_sched_getaffinity,
-  NR_sendmmsg,
-  NR_sendto,
-  NR_set_robust_list,
-  NR_sigaltstack,
-  NR_write,
-  ];
 
 alias VALIDATE_ARCHITECTURE_2 = KILL_PROCESS;
 
