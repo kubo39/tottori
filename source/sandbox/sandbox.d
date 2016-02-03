@@ -16,7 +16,7 @@ pid_t runSandbox(in char[][] args, const Profile profile)
 
 auto activateNamespaceAndMisc(Profile profile)
 {
-  sandbox.namespace.activate();
+  sandbox.namespace.activate(profile);
   sandbox.misc.activate();
   auto filter = new Filter(profile);
   filter.activate();

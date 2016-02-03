@@ -13,7 +13,8 @@ Profile profile()
   return new Profile([ Operation.FileReadAll,
                        Operation.FileReadMetadata,
                        Operation.NetworkOutbound,
-                       Operation.SystemInfoRead ]);
+                       Operation.SystemInfoRead ],
+                     ["/lib", "/etc"]);
 }
 
 

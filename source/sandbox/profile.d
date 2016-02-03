@@ -11,9 +11,11 @@ enum Operation
 final class Profile
 {
   Operation[] allowedOperation;
+  string[] mountPaths;
 
-  this(Operation[] _allowedOperation)
+  this(Operation[] _allowedOperation, string[] _mountPaths = null)
   {
     allowedOperation = _allowedOperation;
+    mountPaths = _mountPaths;
   }
 }

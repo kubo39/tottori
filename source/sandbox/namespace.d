@@ -14,6 +14,8 @@ import std.conv : to;
 import std.range : repeat;
 import std.array : array;
 import std.exception : errnoEnforce;
+import std.file : mkdirRecurse, isDir, isFile;
+import std.path : dirName;
 
 import std.stdio;
 
@@ -30,6 +32,9 @@ immutable
   ulong MS_NODEV = 4;
   ulong MS_NOEXEC = 8;
   ulong MS_NOATIME = 1024;
+  ulong MS_BIND = 4096;
+  ulong MS_REC = 16384;
+  ulong MS_MGC_VAL = 0xc0ed_0000;
 
   int CLONE_NEWNS = 0x0002_0000;
   int CLONE_NEWUTS = 0x0400_0000;
@@ -69,9 +74,9 @@ extern (C)
 }
 
 
-void activate()
+void activate(Profile profile)
 {
-  auto chrootJail = new ChrootJail;
+  auto chrootJail = new ChrootJail(profile);
   chrootJail.enter;
 }
 
@@ -80,7 +85,7 @@ class ChrootJail
 {
   const char* dirname;
 
-  this()
+  this(Profile profile)
   {
     string tmpDirname = "/tmp/sandbox.XXXXXX";
     dirname = cast(const) mkdtemp(cast(char*)tmpDirname.toStringz);
@@ -93,6 +98,15 @@ class ChrootJail
                        "tempfs".toStringz,
                        MS_NOATIME | MS_NODEV | MS_NOEXEC | MS_NOSUID,
                        null) == 0);
+
+    if (profile.allowedOperation.canFind(Operation.FileReadAll) ||
+        profile.allowedOperation.canFind(Operation.FileReadMetadata)) {
+      if (profile.mountPaths !is null) {
+        foreach (mountPath; profile.mountPaths) {
+          bindMount(mountPath, dirname);
+        }
+      }
+    }
   }
 
   // Enter the `chroot` jail.
@@ -102,6 +116,29 @@ class ChrootJail
     errnoEnforce(chdir(".") == 0);
   }
 }
+
+
+// Bind mounts a path into our chroot jail.
+void bindMount(string mountPath, const char* tempDir)
+{
+  auto destinationPath = tempDir.to!string ~ mountPath;
+
+  if (mountPath.isDir) {
+    mkdirRecurse(destinationPath);
+  }
+  else if (mountPath.isFile) {
+    mkdirRecurse(destinationPath.dirName);
+    auto f = File(destinationPath, "w");
+    f.close;
+  }
+
+  errnoEnforce(mount(mountPath.toStringz,
+                     destinationPath.toStringz,
+                     "bind".toStringz,
+                     MS_MGC_VAL | MS_BIND | MS_REC, null) == 0);
+}
+
+
 
 // Removes fake-superuser capabilities. This removes our ability to mess with the filesystem view
 // we've set up.
