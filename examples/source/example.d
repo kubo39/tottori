@@ -14,7 +14,7 @@ Profile profile()
                        Operation.FileReadMetadata,
                        Operation.NetworkOutbound,
                        Operation.SystemInfoRead ],
-                     ["/lib", "/etc"]);
+                     ["/lib\0", "/etc\0"]);
 }
 
 
