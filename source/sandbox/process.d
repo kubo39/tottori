@@ -81,18 +81,21 @@ auto spawn(in char[][] args)
 // the dirty work for waitpid.
 int wait(pid_t pid)
 {
-  int exitCode;
-
   int status;
-  pid_t check = waitpid(-1, &status, 0);
-  if (check == -1) {
-    throw new ProcessException("Process does not exist.");
+  for (;;) {
+    pid_t check = waitpid(-1, &status, 0);
+    if (check == -1) {
+      throw new ProcessException("Process does not exist.");
+    }
+    if (check == pid) {
+      break;
+    }
   }
 
   if (WIFEXITED(status)) {
     return WEXITSTATUS(status);
   }
   else {
-    return -WTERMSIG(status);
+    return WTERMSIG(status);
   }
 }
