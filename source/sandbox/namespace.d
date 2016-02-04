@@ -74,47 +74,33 @@ extern (C)
 }
 
 
+// Enter the `chroot` jail.
 void activate(Profile profile)
 {
-  auto chrootJail = new ChrootJail(profile);
-  chrootJail.enter;
-}
+  char* tmpDirname = cast(char*) "/tmp/sandbox.XXXXXX\0".toStringz;
+  const char* dirname = cast(const) mkdtemp(tmpDirname);
 
+  if (dirname is null) {
+    errnoEnforce(false, "Cound not create temporary directory.");
+  }
 
-class ChrootJail
-{
-  const char* dirname;
+  errnoEnforce(mount(cast(const char*) "tmpfs\0".toStringz,
+                     dirname,
+                     cast(const char*) "tmpfs\0".toStringz,
+                     MS_NOATIME | MS_NODEV | MS_NOEXEC | MS_NOSUID,
+                     null) == 0);
 
-  this(Profile profile)
-  {
-    string tmpDirname = "/tmp/sandbox.XXXXXX";
-    dirname = cast(const) mkdtemp(cast(char*)tmpDirname.toStringz);
-    if (dirname is null) {
-      errnoEnforce(false, "Cound not create temporary directory.");
-    }
-
-    errnoEnforce(mount("tempfs".toStringz,
-                       dirname,
-                       "tempfs".toStringz,
-                       MS_NOATIME | MS_NODEV | MS_NOEXEC | MS_NOSUID,
-                       null) == 0);
-
-    if (profile.allowedOperation.canFind(Operation.FileReadAll) ||
-        profile.allowedOperation.canFind(Operation.FileReadMetadata)) {
-      if (profile.mountPaths !is null) {
-        foreach (mountPath; profile.mountPaths) {
-          bindMount(mountPath, dirname);
-        }
+  if (profile.allowedOperation.canFind(Operation.FileReadAll) ||
+      profile.allowedOperation.canFind(Operation.FileReadMetadata)) {
+    if (profile.mountPaths !is null) {
+      foreach (mountPath; profile.mountPaths) {
+        bindMount(mountPath, dirname);
       }
     }
   }
 
-  // Enter the `chroot` jail.
-  void enter()
-  {
-    errnoEnforce(chroot(dirname) == 0);
-    errnoEnforce(chdir(".") == 0);
-  }
+  errnoEnforce(chroot(dirname) == 0);
+  errnoEnforce(chdir(".") == 0);
 }
 
 
