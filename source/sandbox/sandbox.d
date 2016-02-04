@@ -18,6 +18,6 @@ auto activateNamespaceAndMisc(Profile profile)
 {
   sandbox.namespace.activate(profile);
   sandbox.misc.activate();
-  auto filter = new Filter(profile);
-  filter.activate();
+  // auto filter = new Filter(profile);
+  // filter.activate();
 }
