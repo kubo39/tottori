@@ -1,0 +1,9 @@
+sudo: false
+
+language: d
+
+d:
+  - dmd
+
+script:
+  - dub build --compiler=${DC}
