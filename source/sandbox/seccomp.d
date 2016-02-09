@@ -356,14 +356,9 @@ class Filter
   /// once
   void activate()
   {
-    auto result = prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0);
-    assert(result == 0);
-
-    const fprog = sock_fprog(program.length.to!short, program.ptr);
-    errnoEnforce(prctl(PR_SET_SECCOMP,
-                       SECCOMP_MODE_FILTER,
-                       cast(ulong)&fprog,
-                       -1,
-                       0) == 0);
+    errnoEnforce(prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0) == 0);
+    const sock_fprog fprog = sock_fprog(program.length.to!short, program.ptr);
+    errnoEnforce(prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER,
+                       cast(ulong)&fprog, ~0, 0) == 0, "Not supported seccomp.");
   }
 }
