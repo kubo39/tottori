@@ -45,6 +45,8 @@ immutable
 
   uint _LINUX_CAPABILITY_VERSION_3 = 0x20080522;
   uint _LINUX_CAPABILITY_U32S_3 = 2;
+
+  int O_CLOEXEC = 0x80000;
 }
 
 
@@ -55,6 +57,7 @@ extern (C)
   int chroot(const char*);
   int unshare(int);
   int capset(cap_user_header_t, const_cap_user_data_t);
+  int pipe2(ref int[2], int);
 
   struct __user_cap_header_struct
   {
@@ -172,7 +175,7 @@ pid_t spawnChildInNewNamespace(in char[][] args,  const Profile profile)
 
   int[2] fds;
   // Create a pipe so we can communicate the PID of our grandchild back.
-  errnoEnforce(pipe(fds) == 0);
+  errnoEnforce(pipe2(fds, O_CLOEXEC) == 0);
 
   // Set this `prctl` flag so that we can wait on our grandchild.
   errnoEnforce(prctl(PR_SET_CHILD_SUBREAPER, 1, 0, 0, 0) == 0);
