@@ -242,6 +242,9 @@ static sock_filter[] FILTER_EPILOGUE = [
   ];
 
 
+static dumpfile = "/tmp/seccomp.XXXXXX\0";
+
+
 // seccomp-bpf filter.
 class Filter
 {
@@ -290,7 +293,7 @@ class Filter
 
   void dump()
   {
-    char* path = cast(char*) "/tmp/seccomp.XXXXXX\0".toStringz;
+    char* path = cast(char*) dumpfile.toStringz;
     int fd = mkstemp(path);
     errnoEnforce(fd != -1, "mkstemp(3) failed.");
     auto nbytes = program.length + sock_filter.sizeof;
