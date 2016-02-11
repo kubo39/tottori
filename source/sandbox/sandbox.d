@@ -8,8 +8,10 @@ import sandbox.misc;
 import core.sys.posix.unistd;
 
 
-pid_t runSandbox(in char[][] args, const Profile profile)
+pid_t runSandbox(in char[][] args, Profile profile)
 {
+  auto filter = new Filter(profile);
+  filter.dump;
   return spawnChildInNewNamespace(args, profile);
 }
 

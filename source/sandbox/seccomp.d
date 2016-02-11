@@ -4,9 +4,11 @@ module sandbox.seccomp;
 
 import std.algorithm : canFind;
 import std.conv : to;
+import std.string : toStringz;
 
 import core.sys.posix.fcntl : O_RDONLY, O_NONBLOCK;
 import core.sys.posix.sys.socket : AF_UNIX, AF_INET, AF_INET6;
+import core.sys.posix.unistd : write, close;
 
 import std.exception : errnoEnforce;
 
@@ -29,6 +31,7 @@ extern (C)
   }
 
   int prctl(int, ulong, ulong, ulong, ulong);
+  int mkstemp(char*);
 }
 
 immutable
@@ -283,6 +286,19 @@ class Filter
     }
 
     program ~= FILTER_EPILOGUE;
+  }
+
+  void dump()
+  {
+    char* path = cast(char*) "/tmp/seccomp.XXXXXX\0".toStringz;
+    import std.stdio;
+    path.writeln;
+    int fd = mkstemp(path);
+    errnoEnforce(fd != -1, "mkstemp(3) failed.");
+    fd.writeln;
+    auto nbytes = program.length + sock_filter.sizeof;
+    assert(.write(fd, cast(void*) program.ptr, nbytes) == nbytes);
+    scope(exit) .close(fd);
   }
 
   void allowThisSyscall()
