@@ -291,11 +291,8 @@ class Filter
   void dump()
   {
     char* path = cast(char*) "/tmp/seccomp.XXXXXX\0".toStringz;
-    import std.stdio;
-    path.writeln;
     int fd = mkstemp(path);
     errnoEnforce(fd != -1, "mkstemp(3) failed.");
-    fd.writeln;
     auto nbytes = program.length + sock_filter.sizeof;
     assert(.write(fd, cast(void*) program.ptr, nbytes) == nbytes);
     scope(exit) .close(fd);
