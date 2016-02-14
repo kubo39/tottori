@@ -4,7 +4,7 @@
 
 `tottori` is an OS-Level process sandboxing library in multi-process scenario.
 
-This is just for learing, not production ready!
+This is just for learning, not production ready!
 
 ## Notes
 
