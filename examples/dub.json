@@ -2,6 +2,6 @@
     "name": "example",
     "targetType": "executable",
     "dependencies": {
-        "sandbox": {"version": "~master", "path": "../"}
+        "tottori": {"version": "~master", "path": "../"}
     }
 }

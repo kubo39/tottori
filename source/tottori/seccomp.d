@@ -1,6 +1,6 @@
 // `seccomp-bpf` support on recent Linux kernels.
 
-module sandbox.seccomp;
+module tottori.seccomp;
 
 import std.algorithm : canFind;
 import std.conv : to;
@@ -12,7 +12,7 @@ import core.sys.posix.unistd : write, close;
 
 import std.exception : errnoEnforce;
 
-import sandbox.profile;
+import tottori.profile;
 
 
 extern (C)

@@ -2,12 +2,12 @@ import std.stdio;
 import std.algorithm : canFind;
 import core.stdc.stdlib : exit;
 
-import sandbox.process : spawn, wait;
-import sandbox.sandbox : runSandbox, activateNamespaceAndMisc;
-import sandbox.profile : Profile, Operation;
+import tottori.process : spawn, wait;
+import tottori.sandbox : runSandbox, activateNamespaceAndMisc;
+import tottori.profile : Profile, Operation;
 
 
-// sandbox profile.
+// tottori profile.
 Profile profile()
 {
   return new Profile([ Operation.FileReadAll,

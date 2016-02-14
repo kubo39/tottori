@@ -1,9 +1,9 @@
-module sandbox.sandbox;
+module tottori.sandbox;
 
-import sandbox.profile;
-import sandbox.seccomp;
-import sandbox.namespace;
-import sandbox.misc;
+import tottori.profile;
+import tottori.seccomp;
+import tottori.namespace;
+import tottori.misc;
 
 import core.sys.posix.unistd;
 
@@ -20,8 +20,8 @@ pid_t runSandbox(in char[][] args, Profile profile)
 
 auto activateNamespaceAndMisc(Profile profile)
 {
-  sandbox.namespace.activate(profile);
-  sandbox.misc.activate();
+  tottori.namespace.activate(profile);
+  tottori.misc.activate();
   // auto filter = new Filter(profile);
   // filter.activate();
 }

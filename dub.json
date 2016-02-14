@@ -1,7 +1,7 @@
 {
-    "name": "sandbox",
+    "name": "tottori",
     "authors": ["kubo39"],
-    "targetName": "sandbox",
+    "targetName": "tottori",
     "targetType": "staticLibrary",
     "targetPath": "build",
 }

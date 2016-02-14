@@ -1,6 +1,6 @@
 // namespace.
 
-module sandbox.namespace;
+module tottori.namespace;
 
 import core.sys.posix.unistd;
 import core.sys.posix.stdlib;
@@ -19,8 +19,8 @@ import std.path : dirName;
 
 import std.stdio;
 
-import sandbox.process;
-import sandbox.profile;
+import tottori.process;
+import tottori.profile;
 
 
 immutable
@@ -80,7 +80,7 @@ extern (C)
 // Enter the `chroot` jail.
 void activate(Profile profile)
 {
-  char* tmpDirname = cast(char*) "/tmp/sandbox.XXXXXX\0".toStringz;
+  char* tmpDirname = cast(char*) "/tmp/tottori.XXXXXX\0".toStringz;
   const char* dirname = cast(const) mkdtemp(tmpDirname);
 
   if (dirname is null) {
@@ -206,7 +206,7 @@ pid_t spawnChildInNewNamespace(in char[][] args,  const Profile profile)
       errnoEnforce(unshare(flags) == 0);
 
       // run command.
-      sandbox.process.exec(args);
+      tottori.process.exec(args);
       abort();
       assert(false);
     }

@@ -1,4 +1,4 @@
-module sandbox.profile;
+module tottori.profile;
 
 enum Operation
 {

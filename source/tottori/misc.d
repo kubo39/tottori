@@ -1,11 +1,11 @@
-module sandbox.misc;
+module tottori.misc;
 
 import core.sys.posix.sys.stat : umask, mode_t;
 import core.sys.posix.sys.resource : setrlimit, rlimit;
 import core.sys.posix.unistd : setsid;
 import std.exception : errnoEnforce;
 
-import sandbox.seccomp : prctl;
+import tottori.seccomp : prctl;
 
 
 extern(C)
