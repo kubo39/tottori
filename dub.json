@@ -1,6 +1,7 @@
 {
     "name": "tottori",
     "authors": ["kubo39"],
+    "license": "MIT",
     "targetName": "tottori",
     "targetType": "staticLibrary",
     "targetPath": "build",
