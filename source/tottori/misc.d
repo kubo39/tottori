@@ -1,3 +1,5 @@
+// Sandboxing on Linux via miscellaneous kernel features.
+
 module tottori.misc;
 
 import core.sys.posix.sys.stat : umask, mode_t;
