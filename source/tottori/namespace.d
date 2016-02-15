@@ -21,6 +21,7 @@ import std.stdio;
 
 import tottori.process;
 import tottori.profile;
+import tottori.utils;
 
 
 immutable
@@ -148,8 +149,10 @@ void prepareNamespace(in pid_t uid, in pid_t gid)
 
   import std.stdio : File;
 
-  // See http://crbug.com/457362 for more information on this.
-  File("/proc/self/setgroups", "w").write("deny");
+  if (isSupportsDenySetgroups()) {
+    // See http://crbug.com/457362 for more information on this.
+    File("/proc/self/setgroups", "w").write("deny");
+  }
 
   File("/proc/self/gid_map", "w").writef("0 %d 1", gid);
   File("/proc/self/uid_map", "w").writef("0 %d 1", uid);
