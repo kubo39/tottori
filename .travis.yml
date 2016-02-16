@@ -6,4 +6,4 @@ d:
   - dmd
 
 script:
-  - dub build --compiler=${DC}
+  - cd examples && dub run --compiler=${DC}
