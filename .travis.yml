@@ -6,4 +6,5 @@ d:
   - dmd
 
 script:
-  - cd examples && dub run --compiler=${DC}
+  - ls /boot
+#  - cd examples && dub run --compiler=${DC}
