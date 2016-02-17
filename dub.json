@@ -5,4 +5,7 @@
     "targetName": "tottori",
     "targetType": "staticLibrary",
     "targetPath": "build",
+    "dependencies": {
+        "syscall-d": { "version": "~>0.1.0" }
+    }
 }

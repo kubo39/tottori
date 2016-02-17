@@ -7,4 +7,4 @@ d:
 
 script:
   - cat /boot/config-3.13.0-63-generic | grep CONFIG_SECCOMP
-#  - cd examples && dub run --compiler=${DC}
+  - cd examples && dub run --compiler=${DC}

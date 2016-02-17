@@ -13,7 +13,7 @@ import core.sys.posix.unistd : write, close;
 import std.exception : errnoEnforce;
 
 import tottori.profile;
-
+import syscall : syscall, PRCTL;
 
 extern (C)
 {
@@ -374,7 +374,7 @@ class Filter
   {
     errnoEnforce(prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0) == 0);
     const sock_fprog fprog = sock_fprog(program.length.to!short, program.ptr);
-    errnoEnforce(prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER,
-                       cast(ulong)&fprog, ~0, 0) == 0, "Not supported seccomp.");
+    errnoEnforce(syscall(PRCTL, PR_SET_SECCOMP, SECCOMP_MODE_FILTER,
+                         cast(ulong)&fprog, ~0, 0) == 0, "Not supported seccomp.");
   }
 }
