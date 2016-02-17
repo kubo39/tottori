@@ -5,7 +5,6 @@ module tottori.seccomp;
 import std.algorithm : canFind;
 import std.conv : to;
 import std.string : toStringz;
-import std.stdio : writeln;
 
 import core.sys.posix.fcntl : O_RDONLY, O_NONBLOCK;
 import core.sys.posix.sys.socket : AF_UNIX, AF_INET, AF_INET6;
@@ -14,7 +13,9 @@ import core.sys.posix.unistd : write, close;
 import std.exception : errnoEnforce;
 
 import tottori.profile;
-import syscall : syscall, PRCTL;
+
+pragma(lib, "seccomp");
+
 
 extern (C)
 {
@@ -375,11 +376,7 @@ class Filter
   {
     errnoEnforce(prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0) == 0);
     const sock_fprog fprog = sock_fprog(program.length.to!short, program.ptr);
-    // errnoEnforce(syscall(PRCTL, PR_SET_SECCOMP, SECCOMP_MODE_FILTER,
-    //                      cast(ulong)&fprog) == 0, "Not supported seccomp.");
-    auto ret = syscall(PRCTL, PR_SET_SECCOMP, SECCOMP_MODE_FILTER,
-                       cast(ulong)&fprog, ~0, 0);
-    ret.writeln;
-    errnoEnforce(ret != -1, "Not supported seccomp.");
+    errnoEnforce(prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER,
+                       cast(ulong)&fprog) == 0, "Not supported seccomp.");
   }
 }
