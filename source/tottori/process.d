@@ -1,7 +1,6 @@
 module tottori.process;
 
 import std.stdio : writeln;
-import std.algorithm : canFind;
 import std.string : toStringz;
 import std.conv : to;
 

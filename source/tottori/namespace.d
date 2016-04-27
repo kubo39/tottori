@@ -16,6 +16,7 @@ import std.array : array;
 import std.exception : errnoEnforce;
 import std.file : mkdirRecurse, isDir, isFile;
 import std.path : dirName;
+import std.algorithm : canFind;
 
 import std.stdio;
 
