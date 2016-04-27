@@ -7,6 +7,5 @@ string kProcSelfSetgroups = "/proc/self/setgroups";
 
 bool isSupportsDenySetgroups()
 {
-  return exists(kProcSelfSetgroups);
+    return exists(kProcSelfSetgroups);
 }
-
