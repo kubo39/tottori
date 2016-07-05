@@ -170,7 +170,7 @@ void prepareNamespace(in pid_t uid, in pid_t gid)
 
 
 // spawn a child process in a new namespace.
-pid_t spawnChildInNewNamespace(in char[][] args,  const Profile profile)
+Pid spawnChildInNewNamespace(in char[][] args,  const Profile profile)
 {
     // Store our root namespace UID and GID because they're going to change once we enter a user
     // namespace.
@@ -306,12 +306,12 @@ pid_t spawnChildInNewNamespace(in char[][] args,  const Profile profile)
                                       cast(void*) &grandchildPid,
                                       pid_t.sizeof) == pid_t.sizeof);
 
-    return grandchildPid;
+    return new Pid(grandchildPid);
 }
 
 
 // ditto.
-pid_t spawnChildInNewNamespace(in string[] args, const Profile profile)
+Pid spawnChildInNewNamespace(in string[] args, const Profile profile)
 {
     return spawnChildInNewNamespace(cast(const char[][])args, profile);
 }

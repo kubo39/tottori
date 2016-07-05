@@ -65,7 +65,7 @@ void exec(in char[][] args)
 }
 
 
-auto spawn(in char[][] args)
+Pid spawn(in char[][] args)
 {
     pid_t pid;
 
@@ -73,14 +73,15 @@ auto spawn(in char[][] args)
     if ((pid = fork()) == 0)
     {
         exec(args);
+        assert(false);
     }
     // parent
-    return pid;
+    return new Pid(pid);
 }
 
 
 // the dirty work for waitpid.
-int wait(pid_t pid)
+int wait(Pid pid)
 {
     int status;
     for (;;)
@@ -90,7 +91,7 @@ int wait(pid_t pid)
         {
             throw new ProcessException("Process does not exist.");
         }
-        if (check == pid)
+        if (check == pid.processID)
         {
             break;
         }
@@ -103,5 +104,30 @@ int wait(pid_t pid)
     else
     {
         return WTERMSIG(status);
+    }
+}
+
+
+// A handle that corresponds to a spawned process.
+final class Pid
+{
+private:
+    pid_t _processID;
+
+public:
+
+    @property pid_t processID() const @safe pure nothrow
+    {
+        return _processID;
+    }
+
+    @property pid_t osHandle() @safe pure nothrow
+    {
+        return _processID;
+    }
+
+    this(pid_t id) @safe pure nothrow
+    {
+        _processID = id;
     }
 }

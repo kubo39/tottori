@@ -4,11 +4,12 @@ import tottori.profile;
 import tottori.seccomp;
 import tottori.namespace;
 import tottori.misc;
+import tottori.process;
 
 import core.sys.posix.unistd;
 
 
-pid_t runSandbox(in char[][] args, Profile profile)
+Pid runSandbox(in char[][] args, Profile profile)
 {
     debug
     {
