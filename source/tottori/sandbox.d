@@ -24,6 +24,6 @@ auto activateNamespaceAndMisc(Profile profile)
 {
     tottori.namespace.activate(profile);
     tottori.misc.activate();
-    // auto filter = new Filter(profile);
-    // filter.activate();
+    auto filter = new Filter(profile);
+    filter.activate();
 }
